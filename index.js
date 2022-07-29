@@ -4,6 +4,7 @@ import morgan from 'morgan';
 import cors from 'cors'; 
 import dotenv from 'dotenv'; 
 import uploadRouter from './routes/upload.js';
+import mealRouter from './routes/meal.js';
 
 //routes
 import authRouter from './routes/auth.js';
@@ -21,6 +22,7 @@ app.use(express.static('public'));
 
 //EndPoints
 app.use('/auth',authRouter);
+app.use('/meals',mealRouter);
 
 
 //this endPoint is used to upload image to public/images folder
