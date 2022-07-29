@@ -22,6 +22,7 @@ app.use(express.static('public'));
 //EndPoints
 app.use('/auth',authRouter);
 
+
 //this endPoint is used to upload image to public/images folder
 app.use('/upload',uploadRouter);
 
