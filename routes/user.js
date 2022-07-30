@@ -1,7 +1,6 @@
 import express, { Router } from "express";
 import UserModel from '../models/user.js';
-import crypto from 'crypto-js';
-import jwt from 'jsonwebtoken';
+
 import { verifyTokenAndAuthorizationAsAdmin, verifyTokenAndAuthorization } from "../middleware/verifyToken.js"
 
 let router = express.Router()
