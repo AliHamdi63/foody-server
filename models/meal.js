@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const mealSchema = mongoose.Schema({
     name:{type:String,required:true},
     addons:{type:String},
-    cookingDuration:{type:String,required:true},
+    cookingDuration:{type:Number,required:true},
     price:{type:Number,required:true},
     servings:{type:Number,default:1},
     description:{type:String,required:true},
