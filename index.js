@@ -28,7 +28,7 @@ app.use(express.static('public'));
 
 //EndPoints
 app.use('/auth', authRouter);
-app.use('/user', userRouter);
+app.use('/users', userRouter);
 app.use('/meals',mealRouter);
 
 

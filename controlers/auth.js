@@ -4,9 +4,9 @@ import jwt from 'jsonwebtoken';
 
 
 export const register = async (req, res) => {
-    const { firstName, lastName, email, Password } = req.body;
-
-    if (!(firstName && lastName && email && Password)) {
+    const { firstName, lastName, email,apartmentNumber,floorNumber,BuildingNumber,phone,street,area,city,image } = req.body;
+    let address = {apartmentNumber,floorNumber,BuildingNumber,street,area,city}
+    if (!(firstName && lastName && email && req.body.password)) {
 
         res.status(500).json('you must enter all required field')
     } else {
@@ -20,12 +20,11 @@ export const register = async (req, res) => {
 
             }
             else {
-
-                const hashedPassword = crypto.AES.encrypt(Password, process.env.PASS_SECRET_KEY).toString();
-                const user = new UserModel({ firstName, lastName, email, password: hashedPassword });
+                console.log(req.body)
+                const hashedPassword = crypto.AES.encrypt(req.body.password, process.env.PASS_SECRET_KEY).toString();
+                const user = new UserModel({ firstName, lastName, email, password: hashedPassword,phone,address,image });
                 const savedUser = await user.save();
                 const { password, ...other } = savedUser._doc;
-                console.log(other, "other");
                 res.status(200).json(other);
             }
 
@@ -39,9 +38,9 @@ export const register = async (req, res) => {
 }
 
 export const login = async (req, res) => {
-    const { email, Password } = req.body;
+    const { email } = req.body;
 
-    if (!(email && Password)) {
+    if (!(email && req.body.password)) {
         res.status(400).json('you must enter all required field')
     } else {
         try {
@@ -51,11 +50,12 @@ export const login = async (req, res) => {
 
                 const decryptPass = crypto.AES.decrypt(user.password, process.env.PASS_SECRET_KEY).toString(crypto.enc.Utf8)
 
-                if (decryptPass == Password) {
+                if (decryptPass == req.body.password) {
 
                     const token = jwt.sign({ id: user._id, isAdmin: user.isAdmin }, process.env.TOKEN_KEY, { expiresIn: '2d' });
 
                     const { password, ...other } = user._doc;
+
                     res.status(200).json({ ...other, token })
 
                 } else {
