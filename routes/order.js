@@ -73,17 +73,4 @@ router.delete("/:orderid", verifyTokenAndAuthorizationAsAdmin, async (req, res) 
 })
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 export default router

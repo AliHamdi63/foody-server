@@ -3,12 +3,12 @@ import mongoose from 'mongoose';
 import morgan from 'morgan';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import uploadRouter from './routes/upload.js';
-import mealRouter from './routes/meal.js';
-import orderRouter from './routes/order.js';
 
 //routes
+import uploadRouter from './routes/upload.js';
+import mealRouter from './routes/meal.js';
 import authRouter from './routes/auth.js';
+import orderRouter from './routes/order.js';
 import userRouter from './routes/user.js';
 
 dotenv.config(); //to make env File to save sensitive data
@@ -31,7 +31,7 @@ app.use(express.static('public'));
 app.use('/auth', authRouter);
 app.use('/users', userRouter);
 app.use('/meals',mealRouter);
-
+app.use('/orders',orderRouter);
 
 //this endPoint is used to upload image to public/images folder
 app.use('/upload', uploadRouter);
