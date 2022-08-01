@@ -5,6 +5,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import uploadRouter from './routes/upload.js';
 import mealRouter from './routes/meal.js';
+import orderRouter from './routes/order.js';
 
 //routes
 import authRouter from './routes/auth.js';
