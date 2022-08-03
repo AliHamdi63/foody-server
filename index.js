@@ -3,6 +3,9 @@ import mongoose from 'mongoose';
 import morgan from 'morgan';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
+import {fileURLToPath} from 'url';
+
 
 //routes
 import uploadRouter from './routes/upload.js';
@@ -10,11 +13,14 @@ import mealRouter from './routes/meal.js';
 import authRouter from './routes/auth.js';
 import orderRouter from './routes/order.js';
 import userRouter from './routes/user.js';
-import path from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 
 dotenv.config(); //to make env File to save sensitive data
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 const MONGOOSEDB = process.env.MONGOOSE_DB_CONNECTION;
 const app = express();
 
@@ -26,7 +32,7 @@ mongoose.connect(MONGOOSEDB, (err) => {
 app.use(cors());
 
 app.use(express.json());
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname,'public')));
 
 //EndPoints
 
