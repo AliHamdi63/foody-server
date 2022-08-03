@@ -11,7 +11,6 @@ export const verifyToken = (req, res, next) => {
             if (err) {
                 res.status(500).json(err)
             } else {
-                console.log(user, "user");
                 req.user = user;
                 next();
             }

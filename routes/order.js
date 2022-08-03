@@ -1,41 +1,73 @@
 import express from "express";
 import OrderModel from '../models/order.js';
-import { verifyTokenAndAuthorizationAsAdmin, verifyTokenAndAuthorization } from "../middleware/verifyToken.js"
+import { verifyTokenAndAuthorizationAsAdmin, verifyToken } from "../middleware/verifyToken.js"
 
 
 const router = express.Router()
 
-router.post("/", verifyTokenAndAuthorization, async (req, res) => {
+//make order
+router.post("/", verifyToken, async (req, res) => {
     const user = req.user.id
-    const { meals, amount, status, methodOfPayment } = req.body
+    const { meals, amount, methodOfPayment } = req.body
     try {
 
-        const neworder = new OrderModel({ user, meals, amount, status, methodOfPayment })
-        await neworder.save()
-        res.status(200).json(neworder)
+        const neworder = new OrderModel({ user, meals, amount, methodOfPayment })
+        const savedOrder =  await neworder.save()
+        res.status(200).json(savedOrder)
     } catch (error) {
         res.status(400).json(error)
 
     }
 })
-router.get("/", verifyTokenAndAuthorization, async (req, res) => {
+
+//get all orders
+router.get("/", verifyTokenAndAuthorizationAsAdmin, async (req, res) => {
+
+    try {
+
+        const allorder = await OrderModel.find().populate(["user", "meals.meal"])
+
+        res.status(200).json(allorder)
+    } catch (error) {
+        res.status(400).json(error.message)
+
+    }
+})
+
+
+//get user orders for website
+router.get("/userOrders", verifyToken, async (req, res) => {
     const _id = req.user.id
     try {
 
         const allorder = await OrderModel.find({ user: _id }).populate(["user", "meals.meal"])
-        console.log(allorder);
+
         res.status(200).json(allorder)
     } catch (error) {
         res.status(400).json(error.message)
 
     }
 })
+
+//get user orders for dashboard
+router.get("/userOrders/userId", verifyTokenAndAuthorizationAsAdmin, async (req, res) => {
+  const id = req.params.userId
+  try {
+
+      const allorder = await OrderModel.find({ user: id }).populate(["user", "meals.meal"])
+
+      res.status(200).json(allorder)
+  } catch (error) {
+      res.status(400).json(error.message)
+
+  }
+})
+
 router.get("/:orderid", verifyTokenAndAuthorizationAsAdmin, async (req, res) => {
     const _id = req.params.orderid
     try {
 
-        const allorder = await OrderModel.find({ _id }).populate(["user", "meals.meal"])
-        console.log(allorder);
+        const allorder = await OrderModel.findOne({ _id }).populate(["user", "meals.meal"])
         res.status(200).json(allorder)
     } catch (error) {
         res.status(400).json(error.message)
@@ -43,15 +75,14 @@ router.get("/:orderid", verifyTokenAndAuthorizationAsAdmin, async (req, res) => 
     }
 })
 
-router.put("/:orderid/:status", verifyTokenAndAuthorizationAsAdmin, async (req, res) => {
+router.put("/:orderid", verifyTokenAndAuthorizationAsAdmin, async (req, res) => {
     const _id = req.params.orderid
-    const status = req.params.status
+    const status = req.body.status;
     try {
 
         const toupdateorder = await OrderModel.findOne({ _id }).populate(["user", "meals.meal"])
         toupdateorder.status = status
         await toupdateorder.save()
-        console.log(toupdateorder);
         res.status(200).json(toupdateorder)
     } catch (error) {
         res.status(400).json(error.message)
@@ -64,7 +95,6 @@ router.delete("/:orderid", verifyTokenAndAuthorizationAsAdmin, async (req, res) 
 
         const toDeletOorder = await OrderModel.findOneAndDelete({ _id })
 
-        console.log(toupdateorder);
         res.status(200).json(toDeletOorder)
     } catch (error) {
         res.status(400).json(error.message)
@@ -72,5 +102,83 @@ router.delete("/:orderid", verifyTokenAndAuthorizationAsAdmin, async (req, res) 
     }
 })
 
+// GET MONTHLY INCOME
+
+router.get("/monthly/income",verifyTokenAndAuthorizationAsAdmin, async (req, res) => {
+    const date = new Date();
+    const lastYear = new Date(date.setFullYear(date.getFullYear() - 1));
+
+ 
+    try {
+      const income = await OrderModel.aggregate([
+        { $match: { createdAt: { $gte: lastYear } } },
+        {
+          $project: {
+            month: { $month: "$createdAt" },
+            sales: "$amount",
+          },
+        },
+        {
+          $group: {
+            _id: "$month",
+            total: { $sum: "$sales" },
+          },
+        },
+      ]).sort({_id:1});
+      res.status(200).json(income);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  });
+
+// GET MONTHLY INCOME for user orders
+
+router.get("/monthly/spending",verifyTokenAndAuthorizationAsAdmin, async (req, res) => {
+  const date = new Date();
+  const lastYear = new Date(date.setFullYear(date.getFullYear() - 1));
+
+  try {
+    const income = await OrderModel.aggregate([
+      { $match: { user:req.user.id } },
+      { $match: { createdAt: { $gte: lastYear } } },
+      {
+        $project: {
+          month: { $month: "$createdAt" },
+          sales: "$amount",
+        },
+      },
+      {
+        $group: {
+          _id: "$month",
+          total: { $sum: "$sales" },
+        },
+      },
+    ]).sort({_id:1});
+    res.status(200).json(income);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
+  router.get("/today/income",verifyTokenAndAuthorizationAsAdmin, async (req, res) => {
+    const date = new Date();
+    const yesterday = new Date(date.setDate(date.getDate() - 1));
+ 
+    try {
+      const income = await OrderModel.aggregate([
+        { $match: { createdAt: { $gt: yesterday } } },
+        {
+          $group: {
+            _id: "null",
+            total: { $sum: "$amount" },
+          },
+        },
+      ]);
+      res.status(200).json(income);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  });
+  
 
 export default router

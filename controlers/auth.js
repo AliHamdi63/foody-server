@@ -4,8 +4,8 @@ import jwt from 'jsonwebtoken';
 
 
 export const register = async (req, res) => {
-    const { firstName, lastName, email,apartmentNumber,floorNumber,BuildingNumber,phone,street,area,city,image } = req.body;
-    let address = {apartmentNumber,floorNumber,BuildingNumber,street,area,city}
+    const { firstName, lastName, email } = req.body;
+    
     if (!(firstName && lastName && email && req.body.password)) {
 
         res.status(500).json('you must enter all required field')
@@ -20,16 +20,15 @@ export const register = async (req, res) => {
 
             }
             else {
-                console.log(req.body)
+
                 const hashedPassword = crypto.AES.encrypt(req.body.password, process.env.PASS_SECRET_KEY).toString();
-                const user = new UserModel({ firstName, lastName, email, password: hashedPassword,phone,address,image });
+                const user = new UserModel({ firstName, lastName, email, password: hashedPassword });
                 const savedUser = await user.save();
                 const { password, ...other } = savedUser._doc;
                 res.status(200).json(other);
             }
 
         } catch (err) {
-            console.log(err, "error");
             res.status(400).json(err);
         }
 

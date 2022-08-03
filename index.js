@@ -23,7 +23,7 @@ mongoose.connect(MONGOOSEDB, (err) => {
 })
 
 app.use(cors());
-app.use(morgan('combined'));
+
 app.use(express.json());
 app.use(express.static('public'));
 
