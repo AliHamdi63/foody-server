@@ -28,9 +28,7 @@ app.use(express.json());
 app.use(express.static('public'));
 
 //EndPoints
-app.use((req,res)=>{
-    res.send('hello...')
-})
+
 app.use('/auth', authRouter);
 app.use('/users', userRouter);
 app.use('/meals',mealRouter);
