@@ -10,6 +10,7 @@ import mealRouter from './routes/meal.js';
 import authRouter from './routes/auth.js';
 import orderRouter from './routes/order.js';
 import userRouter from './routes/user.js';
+import path from 'path';
 
 dotenv.config(); //to make env File to save sensitive data
 
@@ -25,7 +26,7 @@ mongoose.connect(MONGOOSEDB, (err) => {
 app.use(cors());
 
 app.use(express.json());
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname,'public')));
 
 //EndPoints
 
