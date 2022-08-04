@@ -73,4 +73,38 @@ router.delete("/:id", verifyTokenAndAuthorization, async (req, res) => {
 
 })
 
+//add user
+router.post('/',async (req, res) => {
+    const { firstName, lastName, email,image,phone,apartmentNumber,floorNumber,BuildingNumber,street,area,city} = req.body;
+    let address = {apartmentNumber,floorNumber,BuildingNumber,street,area,city}
+    if (!(firstName && lastName && email && req.body.password)) {
+
+        res.status(500).json('you must enter all required field')
+    } else {
+
+        try {
+            const oldUser = await UserModel.findOne({ email });
+
+            if (oldUser) {
+
+                res.status(400).json('this email is already exist');
+
+            }
+            else {
+
+                const hashedPassword = crypto.AES.encrypt(req.body.password, process.env.PASS_SECRET_KEY).toString();
+                const user = new UserModel({ firstName, lastName, email, password: hashedPassword,address,phone,image });
+                const savedUser = await user.save();
+                const { password, ...other } = savedUser._doc;
+                res.status(200).json(other);
+            }
+
+        } catch (err) {
+            res.status(400).json(err);
+        }
+
+
+    }
+})
+
 export default router
