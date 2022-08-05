@@ -20,7 +20,7 @@ router.get("/admin",verifyTokenAndAuthorizationAsAdmin, async (req, res) => {
 //get all users
 router.get("/", verifyTokenAndAuthorizationAsAdmin, async (req, res) => {
     try{
-        const allusers = await UserModel.find({})
+        const allusers = await UserModel.find({isAdmin:false})
         res.status(200).json(allusers)
 
     }catch(err){
@@ -43,16 +43,15 @@ router.get("/:id", verifyTokenAndAuthorization, async (req, res) => {
 //edit user
 router.put("/:id", verifyTokenAndAuthorization, async (req, res) => {
 
+    if(req.body.password){
+        req.body.password = crypto.AES.encrypt(req.body.password, process.env.PASS_SECRET_KEY).toString();
+    }
+
     try {
-        let updateeduser = await UserModel.findOne({ _id: req.params.id })
+        
+        const updatedUser = await UserModel.findByIdAndUpdate(req.params.id,req.body,{new:true})
 
-        let keys = Object.keys(req.body)
-        keys.forEach((key => {
-            updateeduser[key] = req.body[key]
-        }))
-        await updateeduser.save()
-
-        res.status(200).json(updateeduser)
+        res.status(200).json(updatedUser)
         
     } catch (err) {
         res.status(400).json(err)
@@ -74,37 +73,36 @@ router.delete("/:id", verifyTokenAndAuthorization, async (req, res) => {
 })
 
 //add user
-router.post('/',async (req, res) => {
-    const { firstName, lastName, email,image,phone,apartmentNumber,floorNumber,BuildingNumber,street,area,city} = req.body;
-    let address = {apartmentNumber,floorNumber,BuildingNumber,street,area,city}
-    if (!(firstName && lastName && email && req.body.password)) {
+router.post('/',verifyTokenAndAuthorizationAsAdmin,async (req, res) => {
 
-        res.status(500).json('you must enter all required field')
-    } else {
+        const {firstName,lastName,email,password} = req.body;
 
-        try {
-            const oldUser = await UserModel.findOne({ email });
+        if(!firstName||!lastName||!email||!password){
+            res.status(400).json('All fields are required')
+        }else{
 
-            if (oldUser) {
-
-                res.status(400).json('this email is already exist');
-
+            try {
+                const oldUser = await UserModel.findOne({ email});
+                
+                if (oldUser) {
+                    
+                    res.status(400).json('this email is already exist');
+                    
+                }
+                else {
+                    if(password){
+                        password = crypto.AES.encrypt(password, process.env.PASS_SECRET_KEY).toString();
+                    }
+                    const user = new UserModel({firstName,lastName,email,password});
+                    const savedUser = await user.save();
+                    res.status(200).json(savedUser);
+                }
+                
+            } catch (err) {
+                res.status(400).json(err);
             }
-            else {
-
-                const hashedPassword = crypto.AES.encrypt(req.body.password, process.env.PASS_SECRET_KEY).toString();
-                const user = new UserModel({ firstName, lastName, email, password: hashedPassword,address,phone,image });
-                const savedUser = await user.save();
-                const { password, ...other } = savedUser._doc;
-                res.status(200).json(other);
-            }
-
-        } catch (err) {
-            res.status(400).json(err);
+            
         }
-
-
-    }
 })
 
 export default router
