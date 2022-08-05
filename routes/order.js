@@ -218,19 +218,19 @@ router.get("/monthly/spending",verifyTokenAndAuthorizationAsAdmin, async (req, r
     try {
         
         let diff = await UserModel.aggregate([
-            { $match: { createdAt: { $gte: lastTwoMonth } } },
-            {
-                $project: {
-                  month: { $month: "$createdAt" },
-                  sales:'$amount'
-                },
-              },
-              {
-                $group: {
-                  _id: "$month",
-                  total: { $sum: "$sales" },
-                },
-              },
+          { $match: { createdAt: { $gte: lastTwoMonth } } },
+          {
+            $project: {
+              month: { $month: "$createdAt" },
+              sales: "$amount",
+            },
+          },
+          {
+            $group: {
+              _id: "$month",
+              total: { $sum: "$sales" },
+            },
+          },
         ]).sort({_id:1})
         diff = Math.round((diff[0].total - diff[1].total)/(diff[0].total + diff[1].total)*100)
         res.status(200).json(diff);
