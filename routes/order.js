@@ -154,7 +154,7 @@ router.get("/monthly/spending",verifyTokenAndAuthorizationAsAdmin, async (req, r
   try {
     const income = await OrderModel.aggregate([
 
-      { $match: { $and:[{createdAt: { $gte: lastYear }},{user:'62e8cfdafc1e23a50077b8bf'}] } },
+      { $match: { $and:[{createdAt: { $gte: lastYear }},{user:{$eq:req.user.id}}] } },
       {
         $project: {
           month: { $month: "$createdAt" },
