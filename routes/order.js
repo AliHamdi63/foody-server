@@ -217,7 +217,7 @@ router.get("/monthly/spending",verifyTokenAndAuthorizationAsAdmin, async (req, r
     const lastTwoMonth = new Date(day.setMonth(day.getMonth()-2));
     try {
         
-        let diff = await UserModel.aggregate([
+        let diff = await OrderModel.aggregate([
           { $match: { createdAt: { $gte: lastTwoMonth } } },
           {
             $project: {
@@ -232,7 +232,7 @@ router.get("/monthly/spending",verifyTokenAndAuthorizationAsAdmin, async (req, r
             },
           },
         ]).sort({_id:1})
-        //diff = Math.round((diff[0].total - diff[1].total)/(diff[0].total + diff[1].total)*100)
+        diff = Math.round((diff[0].total - diff[1].total)/(diff[0].total + diff[1].total)*100)
         res.status(200).json(diff);
     } catch (err) {
         res.status(400).json(err)
