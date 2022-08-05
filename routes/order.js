@@ -206,7 +206,7 @@ router.get("/monthly/spending",verifyTokenAndAuthorizationAsAdmin, async (req, r
           },
         },
       ]);
-      res.status(200).json(income);
+      res.status(200).json(income[0]['total']);
     } catch (err) {
       res.status(500).json(err);
     }
