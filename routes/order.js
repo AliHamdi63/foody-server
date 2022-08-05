@@ -50,7 +50,7 @@ router.get("/userOrders", verifyToken, async (req, res) => {
 })
 
 //get user orders for dashboard
-router.get("/userOrders/userId", verifyTokenAndAuthorizationAsAdmin, async (req, res) => {
+router.get("/userOrders/:userId", verifyTokenAndAuthorizationAsAdmin, async (req, res) => {
   const id = req.params.userId
   try {
 
