@@ -103,7 +103,7 @@ router.get('/deffrence/monthly',async(req,res)=>{
                 },
               },
         ]).sort({_id:1})
-        diff = Math.round((diff[0].total - diff[1].total)/(diff[0].total + diff[1].total)*100)
+        diff = Math.round((diff[1].total - diff[0].total)/(diff[0].total + diff[1].total)*100)
         res.status(200).json(diff);
     } catch (err) {
         res.status(400).json(err)
