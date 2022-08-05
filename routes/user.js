@@ -1,6 +1,6 @@
 import express from "express";
 import UserModel from '../models/user.js';
-
+import crypto from 'crypto-js';
 import { verifyTokenAndAuthorizationAsAdmin, verifyTokenAndAuthorization } from "../middleware/verifyToken.js"
 
 let router = express.Router()
@@ -72,37 +72,5 @@ router.delete("/:id", verifyTokenAndAuthorization, async (req, res) => {
 
 })
 
-//add user
-router.post('/',verifyTokenAndAuthorizationAsAdmin,async (req, res) => {
-
-        const {firstName,lastName,email,password} = req.body;
-
-        if(!firstName||!lastName||!email||!password){
-            res.status(400).json('All fields are required')
-        }else{
-
-            try {
-                const oldUser = await UserModel.findOne({ email});
-                
-                if (oldUser) {
-                    
-                    res.status(400).json('this email is already exist');
-                    
-                }
-                else {
-                    if(password){
-                        password = crypto.AES.encrypt(password, process.env.PASS_SECRET_KEY).toString();
-                    }
-                    const user = new UserModel({firstName,lastName,email,password});
-                    const savedUser = await user.save();
-                    res.status(200).json(savedUser);
-                }
-                
-            } catch (err) {
-                res.status(400).json(err);
-            }
-            
-        }
-})
 
 export default router
