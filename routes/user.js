@@ -17,6 +17,18 @@ router.get("/admin",verifyTokenAndAuthorizationAsAdmin, async (req, res) => {
     }
 })
 
+//get number of users
+router.get('/numberOfUsers',verifyTokenAndAuthorizationAsAdmin,async(req,res)=>{
+
+    try{
+        const count = await UserModel.count();
+        res.status(200).json(count);
+
+    }catch(err){
+        res.status(400).json(err);
+    }
+})
+
 //get all users
 router.get("/", verifyTokenAndAuthorizationAsAdmin, async (req, res) => {
     try{
@@ -72,5 +84,30 @@ router.delete("/:id", verifyTokenAndAuthorization, async (req, res) => {
 
 })
 
+router.get('/deffrence/monthly',async(req,res)=>{
+    const day = new Date();
+    const lastTwoMonth = new Date(day.setMonth(day.getMonth()-2));
+    try {
+        
+        let diff = await UserModel.aggregate([
+            { $match: { createdAt: { $gte: lastTwoMonth } } },
+            {
+                $project: {
+                  month: { $month: "$createdAt" },
+                },
+              },
+              {
+                $group: {
+                  _id: "$month",
+                  total: { $sum: 1 },
+                },
+              },
+        ]).sort({_id:1})
+        diff = Math.round((diff[0].total - diff[1].total)/(diff[0].total + diff[1].total)*100)
+        res.status(200).json(diff);
+    } catch (err) {
+        res.status(400).json(err)
+    }
+})
 
 export default router

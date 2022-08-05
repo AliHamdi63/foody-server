@@ -1,6 +1,7 @@
 import {verifyTokenAndAuthorizationAsAdmin} from '../middleware/verifyToken.js';
 import express from 'express';
-import {addNewMeal,deleteMeal,editIngredients,editInstructions,editMeal,getCategories,getCuisine,getMeals,getOneMeal} from '../controlers/meal.js'
+import {addNewMeal,deleteMeal,editIngredients,editInstructions,editMeal,getCategories,getCuisine,getMeals,getName,getOneMeal, searchByName} from '../controlers/meal.js'
+
 
 const router = express.Router();
 
@@ -31,5 +32,12 @@ router.get('/find/categories',getCategories)
 
 //get cuisine
 router.get('/find/cuisine',getCuisine)
+
+//get names
+router.get('/find/name',getName)
+
+//search for meal by name
+router.get('/search/:name',searchByName)
+
 
 export default router;

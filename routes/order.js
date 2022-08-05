@@ -63,6 +63,20 @@ router.get("/userOrders/userId", verifyTokenAndAuthorizationAsAdmin, async (req,
   }
 })
 
+//get number of orders
+router.get('/numberOfOrders',verifyTokenAndAuthorizationAsAdmin,async(req,res)=>{
+
+  try{
+      const count = await OrderModel.count();
+      res.status(200).json(count);
+
+  }catch(err){
+      res.status(400).json(err);
+  }
+})
+
+
+
 router.get("/:orderid", verifyTokenAndAuthorizationAsAdmin, async (req, res) => {
     const _id = req.params.orderid
     try {
@@ -179,7 +193,76 @@ router.get("/monthly/spending",verifyTokenAndAuthorizationAsAdmin, async (req, r
       res.status(500).json(err);
     }
   });
-  
 
+  //all income
+  router.get("/all/income",verifyTokenAndAuthorizationAsAdmin, async (req, res) => {
+ 
+    try {
+      const income = await OrderModel.aggregate([
+        {
+          $group: {
+            _id: "null",
+            total: { $sum: "$amount" },
+          },
+        },
+      ]);
+      res.status(200).json(income);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  });
+
+  router.get('/deffrenceincome/monthly',async(req,res)=>{
+    const day = new Date();
+    const lastTwoMonth = new Date(day.setMonth(day.getMonth()-2));
+    try {
+        
+        let diff = await UserModel.aggregate([
+            { $match: { createdAt: { $gte: lastTwoMonth } } },
+            {
+                $project: {
+                  month: { $month: "$createdAt" },
+                  sales:'$amount'
+                },
+              },
+              {
+                $group: {
+                  _id: "$month",
+                  total: { $sum: "$sales" },
+                },
+              },
+        ]).sort({_id:1})
+        diff = Math.round((diff[0].total - diff[1].total)/(diff[0].total + diff[1].total)*100)
+        res.status(200).json(diff);
+    } catch (err) {
+        res.status(400).json(err)
+    }
+})
+
+  router.get('/deffrence/monthly',async(req,res)=>{
+    const day = new Date();
+    const lastTwoMonth = new Date(day.setMonth(day.getMonth()-2));
+    try {
+        
+        let diff = await OrderModel.aggregate([
+            { $match: { createdAt: { $gte: lastTwoMonth } } },
+            {
+                $project: {
+                  month: { $month: "$createdAt" },
+                },
+              },
+              {
+                $group: {
+                  _id: "$month",
+                  total: { $sum: 1 },
+                },
+              },
+        ]).sort({_id:1})
+        diff = Math.round((diff[0].total - diff[1].total)/(diff[0].total + diff[1].total)*100)
+        res.status(200).json(diff);
+    } catch (err) {
+        res.status(400).json(err)
+    }
+})
 
 export default router

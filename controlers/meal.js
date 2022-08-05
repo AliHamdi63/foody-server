@@ -136,3 +136,32 @@ export const getCategories = async(req,res)=>{
      res.status(400).json(err);
     }
  }
+
+ export const getName = async(req,res)=>{
+    try {
+        let name = await MealModel.aggregate([
+    
+            {
+                $project:{_id:-1,name:1}
+            },
+            {
+                $group:{_id:"$name"}
+            }
+        ]);
+        name = name.map((el)=>el._id)
+        res.status(200).json(name);
+        
+       } catch (err) {
+        res.status(400).json(err);
+       }
+}
+
+export const searchByName = async(req,res)=>{
+    const name = req.params.name;
+    try {
+       let meal = await MealModel.find({name:{$regex:name}});
+        res.status(200).json(meal);
+    } catch (err) {
+        res.status(400).json(err);
+    }
+}
