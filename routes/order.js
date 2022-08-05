@@ -22,10 +22,10 @@ router.post("/", verifyToken, async (req, res) => {
 
 //get all orders
 router.get("/", verifyTokenAndAuthorizationAsAdmin, async (req, res) => {
-
+    let limit = req.query.limit;
     try {
 
-        const allorder = await OrderModel.find().populate(["user", "meals.meal"])
+        const allorder = await OrderModel.find().limit(limit).populate(["user", "meals.meal"])
 
         res.status(200).json(allorder)
     } catch (error) {
