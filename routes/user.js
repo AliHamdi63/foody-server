@@ -7,9 +7,10 @@ let router = express.Router()
 
 // get all admins
 router.get("/admin",verifyTokenAndAuthorizationAsAdmin, async (req, res) => {
-    console.log("--------------------------------------------------");
+
     try{
-        const alladmins = await UserModel.find({ isAdmin: true })
+        let alladmins = await UserModel.find({ isAdmin: true })
+        alladmins = alladmins.filter((admin)=>admin._id!==req.user.id);
         res.status(200).json(alladmins)
 
     }catch(err){
