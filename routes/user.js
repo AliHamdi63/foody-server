@@ -10,10 +10,12 @@ router.get("/admin",verifyTokenAndAuthorizationAsAdmin, async (req, res) => {
 
     try{
         let alladmins = await UserModel.find({ isAdmin: true })
-        alladmins = alladmins.filter((admin)=>{
-           return admin._id!== req.user.id
+        const admins = alladmins.filter((admin)=>{
+
+           return admin._id.toString()!== req.user.id
         });
-        res.status(200).json(alladmins)
+
+        res.status(200).json(admins)
 
     }catch(err){
         res.status(400).json(err)

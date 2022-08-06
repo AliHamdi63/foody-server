@@ -1,6 +1,7 @@
 import express from "express";
 import OrderModel from '../models/order.js';
 import { verifyTokenAndAuthorizationAsAdmin, verifyToken } from "../middleware/verifyToken.js"
+import mongoose from "mongoose";
 
 
 const router = express.Router()
@@ -154,7 +155,7 @@ router.get("/monthly/spending/:userId",verifyTokenAndAuthorizationAsAdmin, async
   try {
     const income = await OrderModel.aggregate([
 
-      { $match: { $and:[{createdAt: { $gte: lastYear }},{user:req.params.userId}] } },
+      { $match: { $and:[{createdAt: { $gte: lastYear }},{user:new mongoose.mongo.ObjectId(req.params.userId)}] } },
       {
         $project: {
           month: { $month: "$createdAt" },
