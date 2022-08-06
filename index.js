@@ -13,8 +13,6 @@ import mealRouter from './routes/meal.js';
 import authRouter from './routes/auth.js';
 import orderRouter from './routes/order.js';
 import userRouter from './routes/user.js';
-import chatRouter from './routes/chat.js';
-import messageRouter from './routes/message.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -47,8 +45,7 @@ app.use('/orders',orderRouter);
 app.use('/upload', uploadRouter);
 
 //tihs endpoints for chat app
-app.use('/chats',chatRouter);
-app.use('/messages',messageRouter);
+app.use()
 
 //connect to server
 app.listen(PORT, (err) => {
