@@ -44,8 +44,6 @@ app.use('/orders',orderRouter);
 //this endPoint is used to upload image to public/images folder
 app.use('/upload', uploadRouter);
 
-//tihs endpoints for chat app
-app.use()
 
 //connect to server
 app.listen(PORT, (err) => {
