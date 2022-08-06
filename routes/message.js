@@ -1,5 +1,5 @@
-const express = require('express')
-const MessageModel = require('../models/message');
+import express from 'express';
+import MessageModel from '../models/message.js';
 
 const router = express.Router();
 
@@ -36,7 +36,7 @@ router.get('/:chatId',async(req,res)=>{
     }
 })
 
-module.exports =  router;
+export default router;
 
 
 

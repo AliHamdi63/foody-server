@@ -1,5 +1,5 @@
-const express = require('express')
-const ChatModel = require('../models/chat');
+import express from 'express';
+import ChatModel from '../models/chat.js';
 const router = express.Router();
 
 
@@ -54,7 +54,7 @@ router.get('/:senderId/:recieverId',async(req,res)=>{
     }
 })
 
-module.exports =  router;
+export default router;
 
 
 
