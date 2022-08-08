@@ -267,7 +267,7 @@ router.get("/monthly/spending/:userId",verifyTokenAndAuthorizationAsAdmin, async
     }
 })
 
-const stripe = Stripe(process.env.STRIPE_PRIVATE_KEY);
+const stripe = Stripe('sk_test_51LUWrXDC6Iq6SC4A9g3W8qH33SUu9pVR4SlF7YxmgmiuSsQWIaBFUEeXNmdNnVOgJpMRIdCKIvSXmjSq9WuZOXsl00AHxDmBCz');
 
   router.post(`/checkout`, async (req, res) => {
 
@@ -281,14 +281,15 @@ const stripe = Stripe(process.env.STRIPE_PRIVATE_KEY);
         payment_method_types: ["card"],
         mode: "payment",
         line_items: req.body.meals.map((item) => {
-          const storeMeal = storeMeals.find((meal)=>meal._id.toString()===item.meal.toString());
+          const storeMeal = storeMeals.find((meal)=>{return meal._id.toString()===item.meal});
+          console.log(storeMeal);
           return {
             price_data: {
               currency: "egp",
               product_data: {
-                name: storeMeal.name,
+                name: storeMeal['name'],
               },
-              unit_amount: storeMeal.price,
+              unit_amount: Math.round(storeMeal['price']*100),
             },
             quantity: item.quantity,
           };
