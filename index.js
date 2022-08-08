@@ -1,6 +1,5 @@
 import express from 'express';
 import mongoose from 'mongoose';
-import morgan from 'morgan';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';

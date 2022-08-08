@@ -1,8 +1,9 @@
 import express from "express";
 import OrderModel from '../models/order.js';
+import MealModel from '../models/meal.js';
 import { verifyTokenAndAuthorizationAsAdmin, verifyToken } from "../middleware/verifyToken.js"
 import mongoose from "mongoose";
-
+import Stripe from 'stripe';
 
 const router = express.Router()
 
@@ -265,5 +266,41 @@ router.get("/monthly/spending/:userId",verifyTokenAndAuthorizationAsAdmin, async
         res.status(400).json(err)
     }
 })
+
+const stripe = Stripe(process.env.STRIPE_PRIVATE_KEY);
+
+  router.post(`/checkout`, async (req, res) => {
+
+    try {
+
+      const storeMeals = await MealModel.aggregate([
+        {$project:{_id:1,name:1,price:1}},
+      ])
+
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ["card"],
+        mode: "payment",
+        line_items: req.body.meals.map((item) => {
+          const storeMeal = storeMeals.find((meal)=>meal._id.toString()===item.meal.toString());
+          return {
+            price_data: {
+              currency: "egp",
+              product_data: {
+                name: storeMeal.name,
+              },
+              unit_amount: storeMeal.price,
+            },
+            quantity: item.quantity,
+          };
+        }),
+        success_url: ``,
+        cancel_url: ``,
+      });
+      res.json({ url: session.url });
+    } catch (e) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
 
 export default router
