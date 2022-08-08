@@ -294,7 +294,7 @@ const stripe = Stripe(process.env.STRIPE_PRIVATE_KEY);
           };
         }),
         success_url: `http://localhost:3000/PurchaseSuccess`,
-        cancel_url: ``,
+        cancel_url: `http://localhost:3000/PurchaseSuccess`,
       });
       res.json({ url: session.url });
     } catch (e) {
