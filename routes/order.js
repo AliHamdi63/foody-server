@@ -293,7 +293,7 @@ const stripe = Stripe(process.env.STRIPE_PRIVATE_KEY);
             quantity: item.quantity,
           };
         }),
-        success_url: ``,
+        success_url: `http://localhost:3000/PurchaseSuccess`,
         cancel_url: ``,
       });
       res.json({ url: session.url });
