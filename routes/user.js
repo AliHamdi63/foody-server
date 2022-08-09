@@ -2,7 +2,7 @@ import express from "express";
 import UserModel from '../models/user.js';
 import crypto from 'crypto-js';
 import { verifyTokenAndAuthorizationAsAdmin, verifyTokenAndAuthorization } from "../middleware/verifyToken.js"
-
+import jwt from "jsonwebtoken";
 let router = express.Router()
 
 // get all admins
@@ -67,8 +67,17 @@ router.put("/:id", verifyTokenAndAuthorization, async (req, res) => {
     try {
         
         const updatedUser = await UserModel.findByIdAndUpdate(req.params.id,req.body,{new:true})
+        let token;
+        if(!req.user.isAdmin){
 
-        res.status(200).json(updatedUser)
+             token = jwt.sign({ id: req.params.id, isAdmin: false }, process.env.TOKEN_KEY, { expiresIn: '2d' });
+            
+        }
+        if(token){
+            res.status(200).json({...updatedUser,token})
+        }else{
+            res.status(200).json(updatedUser)
+        }
         
     } catch (err) {
         res.status(400).json(err)
