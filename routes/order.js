@@ -10,8 +10,16 @@ const router = express.Router()
 //make order
 router.post("/", verifyToken, async (req, res) => {
     const user = req.user.id
-    const { meals, amount, methodOfPayment } = req.body
+    const { meals, methodOfPayment } = req.body
     try {
+        const storeMeals = await MealModel.aggregate([
+          {$project:{_id:1,price:1}},
+        ]);
+        let amount = meals.reduce((prev,cur)=>{
+          currentMeal = storeMeals.find(storeMeal=>storeMeal._id.toString()===cur.meal);
+          currentPrice = currentMeal.price * cur.quantity;
+          return prev + currentPrice;
+        },0)
 
         const neworder = new OrderModel({ user, meals, amount, methodOfPayment })
         const savedOrder =  await neworder.save()
