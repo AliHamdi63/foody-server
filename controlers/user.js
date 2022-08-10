@@ -31,7 +31,7 @@ export const getNumberOfUsers = async(req,res)=>{
 
 export const getAllUsers = async (req, res) => {
     try{
-        const allusers = await UserModel.find({isAdmin:false})
+        const allusers = await UserModel.find({isAdmin:false}).sort({_id:-1})
         res.status(200).json(allusers)
 
     }catch(err){

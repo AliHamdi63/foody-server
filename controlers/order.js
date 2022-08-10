@@ -33,7 +33,7 @@ export const getAllOrders = async (req, res) => {
     let limit = req.query.limit;
     try {
 
-        const allorder = await OrderModel.find().limit(limit).populate(["user", "meals.meal"])
+        const allorder = await OrderModel.find().limit(limit).sort({_id:-1}).populate(["user", "meals.meal"])
 
         res.status(200).json(allorder)
     } catch (error) {
