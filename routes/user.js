@@ -24,6 +24,7 @@ router.put("/:id", verifyTokenAndAuthorization, editUser)
 //delete user
 router.delete("/:id", verifyTokenAndAuthorization, deleteUser)
 
+//get deff monthly
 router.get('/deffrence/monthly',diffMonthly)
 
 export default router

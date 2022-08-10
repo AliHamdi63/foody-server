@@ -288,8 +288,8 @@ export const checkout = async (req, res) => {
             quantity: item.quantity,
           };
         }),
-        success_url: `PurchaseSuccess`,
-        cancel_url: `Cart`,
+        success_url: `http://localhost:3000/PurchaseSuccess`,
+        cancel_url: `http://localhost:3000/Cart`,
       });
       res.json({ url: session.url });
     } catch (e) {
