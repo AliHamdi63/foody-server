@@ -2,7 +2,6 @@ import {verifyTokenAndAuthorizationAsAdmin} from '../middleware/verifyToken.js';
 import express from 'express';
 import {addNewMeal,deleteMeal,editIngredients,editInstructions,editMeal,getCategories,getCuisine,getMeals,getName,getOneMeal, searchByName} from '../controlers/meal.js'
 
-
 const router = express.Router();
 
 //add new meal
@@ -16,7 +15,6 @@ router.put('/:id/ingredients',verifyTokenAndAuthorizationAsAdmin,editIngredients
 
 //edit instructions in a meal
 router.put('/:id/instructions',verifyTokenAndAuthorizationAsAdmin,editInstructions)
-
 
 //delete meal
 router.delete('/:id',verifyTokenAndAuthorizationAsAdmin,deleteMeal)
