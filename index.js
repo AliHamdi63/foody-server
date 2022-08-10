@@ -1,6 +1,5 @@
 import express from 'express';
 import mongoose from 'mongoose';
-import morgan from 'morgan';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
@@ -13,6 +12,8 @@ import mealRouter from './routes/meal.js';
 import authRouter from './routes/auth.js';
 import orderRouter from './routes/order.js';
 import userRouter from './routes/user.js';
+import chatRouter from './routes/chat.js';
+import messageRouter from './routes/message.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -40,6 +41,8 @@ app.use('/auth', authRouter);
 app.use('/users', userRouter);
 app.use('/meals',mealRouter);
 app.use('/orders',orderRouter);
+app.use('/chats',chatRouter);
+app.use('/messages',messageRouter);
 
 //this endPoint is used to upload image to public/images folder
 app.use('/upload', uploadRouter);
