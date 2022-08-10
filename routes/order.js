@@ -16,8 +16,10 @@ router.post("/", verifyToken, async (req, res) => {
           {$project:{_id:1,price:1}},
         ]);
         let amount = meals.reduce((prev,cur)=>{
-          currentMeal = storeMeals.find(storeMeal=>storeMeal._id.toString()===cur.meal);
-          currentPrice = currentMeal.price * cur.quantity;
+          const currentMeal = storeMeals.find(storeMeal=>{
+            return storeMeal._id.toString()===cur.meal
+          });
+          const currentPrice = currentMeal.price * cur.quantity;
           return prev + currentPrice;
         },0)
 
