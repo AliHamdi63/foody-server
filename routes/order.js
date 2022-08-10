@@ -132,12 +132,12 @@ router.delete("/:orderid", verifyTokenAndAuthorizationAsAdmin, async (req, res) 
 
 router.get("/monthly/income",verifyTokenAndAuthorizationAsAdmin, async (req, res) => {
     const date = new Date();
-    const lastYear = new Date(date.setFullYear(date.getFullYear() - 1));
+    const lastSixMonths = new Date(date.setMonth(date.getMonth() - 6));
 
  
     try {
       const income = await OrderModel.aggregate([
-        { $match: { createdAt: { $gte: lastYear } } },
+        { $match: { createdAt: { $gte: lastSixMonths } } },
         {
           $project: {
             month: { $month: "$createdAt" },
@@ -161,12 +161,12 @@ router.get("/monthly/income",verifyTokenAndAuthorizationAsAdmin, async (req, res
 
 router.get("/monthly/spending/:userId",verifyTokenAndAuthorizationAsAdmin, async (req, res) => {
   const date = new Date();
-  const lastYear = new Date(date.setFullYear(date.getFullYear() - 1));
+  const lastsixMonths = new Date(date.setMonth(date.getMonth() - 6));
 
   try {
     const income = await OrderModel.aggregate([
 
-      { $match: { $and:[{createdAt: { $gte: lastYear }},{user:new mongoose.mongo.ObjectId(req.params.userId)}] } },
+      { $match: { $and:[{createdAt: { $gte: lastsixMonths }},{user:new mongoose.mongo.ObjectId(req.params.userId)}] } },
       {
         $project: {
           month: { $month: "$createdAt" },
