@@ -288,8 +288,8 @@ export const checkout = async (req, res) => {
             quantity: item.quantity,
           };
         }),
-        success_url: `http://localhost:3000/PurchaseSuccess`,
-        cancel_url: `http://localhost:3000/Cart`,
+        success_url: `https://foodyap.herokuapp.com/PurchaseSuccess`,
+        cancel_url: `https://foodyap.herokuapp.com/Cart`,
       });
       res.json({ url: session.url });
     } catch (e) {
