@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
-import {fileURLToPath} from 'url';
+import { fileURLToPath } from 'url';
 
 
 //routes
@@ -26,6 +26,7 @@ const MONGOOSEDB = process.env.MONGOOSE_DB_CONNECTION;
 const app = express();
 
 //connect to mongoose database
+mongoose.set('strictQuery', true);
 mongoose.connect(MONGOOSEDB, (err) => {
     !err ? console.log(`connected to mongoDB successfully`) : console.log(err.message);
 })
@@ -33,16 +34,16 @@ mongoose.connect(MONGOOSEDB, (err) => {
 app.use(cors());
 
 app.use(express.json());
-app.use(express.static(path.join(__dirname,'public')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 //EndPoints
 
 app.use('/auth', authRouter);
 app.use('/users', userRouter);
-app.use('/meals',mealRouter);
-app.use('/orders',orderRouter);
-app.use('/chats',chatRouter);
-app.use('/messages',messageRouter);
+app.use('/meals', mealRouter);
+app.use('/orders', orderRouter);
+app.use('/chats', chatRouter);
+app.use('/messages', messageRouter);
 
 //this endPoint is used to upload image to public/images folder
 app.use('/upload', uploadRouter);
